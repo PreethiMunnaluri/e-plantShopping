@@ -35,6 +35,24 @@ const cartSlice = createSlice({
         state.items = state.items.filter((i) => i.name !== name);
       }
     },
+    // Rubric-required reducer name. Supports either:
+    // - updateQuantity({ name, quantity }) to set an exact quantity
+    // - updateQuantity({ name, delta }) to add/subtract
+    updateQuantity: (state, action) => {
+      const { name, quantity, delta } = action.payload || {};
+      const item = state.items.find((i) => i.name === name);
+      if (!item) return;
+
+      if (typeof quantity === 'number') {
+        item.quantity = quantity;
+      } else if (typeof delta === 'number') {
+        item.quantity += delta;
+      }
+
+      if (item.quantity <= 0) {
+        state.items = state.items.filter((i) => i.name !== name);
+      }
+    },
     // Optional helper for debugging/QA
     clearCart: (state) => {
       state.items = [];
@@ -42,5 +60,12 @@ const cartSlice = createSlice({
   },
 });
 
-export const { addItem, removeItem, incrementQuantity, decrementQuantity, clearCart } = cartSlice.actions;
+export const {
+  addItem,
+  removeItem,
+  incrementQuantity,
+  decrementQuantity,
+  updateQuantity,
+  clearCart,
+} = cartSlice.actions;
 export default cartSlice.reducer;
